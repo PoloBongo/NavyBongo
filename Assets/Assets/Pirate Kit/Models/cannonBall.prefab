@@ -139,8 +139,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 20
-  explosion: {fileID: 2402004485215833686, guid: ab019caa7d8f73e428e8f8e565187119, type: 3}
+  explosionSplash: {fileID: 2402004485215833686, guid: ab019caa7d8f73e428e8f8e565187119, type: 3}
+  explosionFire: {fileID: 1802078728324033080, guid: c11145ee33b207d429a4f954a140619f, type: 3}
   explosionSound: {fileID: 3431995388314941177}
+  popupDamage: {fileID: 8501929912331473874, guid: 0b9fdf1eb95b9bc4293c9f2141683c56, type: 3}
 --- !u!82 &3431995388314941177
 AudioSource:
   m_ObjectHideFlags: 0

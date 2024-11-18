@@ -40,4 +40,9 @@ public class ControlsManager : MonoBehaviour
     {
         playerInputAction.CameraController.Enable();
     }
+
+    public PlayerInputAction GetPlayerInputAction()
+    {
+        return playerInputAction;
+    }
 }

@@ -1,28 +1,88 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TowerController : MonoBehaviour
 {
     [SerializeField] private Slider towerHealth;
+    [SerializeField] private Slider uiDestruction;
     [SerializeField] private float maxHealth;
     [SerializeField] private float actualHealth;
 
+    private TMP_Text destructionText;
+    private GetAllTowersCount getAllTowersCount;
+
+    private TowerAttack towerAttack;
+    private bool canRiposte;
+    
+    // event
+    public delegate void OnDestroyAction(GameObject destroyedObject);
+    public static event OnDestroyAction OnDestroyed;
     private void Start()
     {
+        towerAttack = GetComponent<TowerAttack>();
+        if (!towerAttack) Debug.LogError("TowerAttack cannot be null");
+        towerAttack.Initialize();
+        canRiposte = false;
+        getAllTowersCount = GetComponent<GetAllTowersCount>();
+        if (!getAllTowersCount) Debug.LogError("GetAllTowersCount cannot be null");
         towerHealth.value = maxHealth;
         actualHealth = maxHealth;
+        FindUIDestruction();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void FindUIDestruction()
     {
-        if (other.CompareTag("Damage"))
+        GameObject uiDestructionGameObject = GameObject.FindGameObjectWithTag("UIDestruction");
+        uiDestruction = uiDestructionGameObject.GetComponent<Slider>();
+        if (uiDestruction == null) Debug.LogError("UI Destruction GameObject not found");
+        destructionText = uiDestructionGameObject.GetComponentInChildren<TMP_Text>();
+        if (destructionText == null) Debug.LogError("UI Destruction Text not found");
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Damage"))
         {
-            Debug.Log("sa touche chef");
             int actualDamage = other.gameObject.GetComponent<ReceiveDamage>().GetDamage;
             actualHealth -= actualDamage;
+            UpdateUIDestructionPourcentage(actualDamage);
+            UpdateHealthSlider();
+            
+            if (actualHealth < maxHealth) canRiposte = true;
+            towerAttack.UpdateCheckRiposte();
         }
+    }
+
+    private void UpdateHealthSlider()
+    {
+        towerHealth.value = actualHealth;
+        CheckHealthTower();
+    }
+
+    private void CheckHealthTower()
+    {
+        if (towerHealth.value <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void UpdateUIDestructionPourcentage(int _damage)
+    {
+        uiDestruction.value += _damage;
+        float pourcentageDestruction = uiDestruction.value / getAllTowersCount.GetTowersCount();
+        int pourcentageArrondi = Mathf.RoundToInt(pourcentageDestruction);
+        destructionText.text = pourcentageArrondi + "% Destruction";
+    }
+    
+    private void OnDestroy()
+    {
+        OnDestroyed?.Invoke(gameObject);
+    }
+
+    public bool GetCanRisposte()
+    {
+        return canRiposte;
     }
 }

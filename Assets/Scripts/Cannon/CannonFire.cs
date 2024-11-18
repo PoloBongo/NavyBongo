@@ -15,6 +15,7 @@ public class CannonFire : MonoBehaviour
     [SerializeField] private GameObject cannonBall;
     [SerializeField] private Transform shotPos;
     [SerializeField] private float firePower = 10f;
+    private Rigidbody rb;
 
     [Header("Cannon UI")]
     [SerializeField] private Slider sliderReload;
@@ -41,6 +42,9 @@ public class CannonFire : MonoBehaviour
 
     private void OnEnable()
     {
+        if (!rb) GetRigidbody();
+        rb.isKinematic = false;
+        sliderReload.gameObject.SetActive(true);
         StopCoroutineResetReloadCoroutine();
         StopCoroutineReloadCoroutine();
         RestoreSliderValue();
@@ -52,6 +56,8 @@ public class CannonFire : MonoBehaviour
     
     private void OnDisable()
     {
+        if (!rb) GetRigidbody();
+        rb.isKinematic = true;
         SaveSliderValue();
         StopCoroutineResetReloadCoroutine();
         StopCoroutineReloadCoroutine();
@@ -59,6 +65,12 @@ public class CannonFire : MonoBehaviour
         surchauffeCannon = false;
         cancelReloadCannon = false;
         unReloadCoroutine = null;
+        if (sliderReload) sliderReload.gameObject.SetActive(false);
+    }
+    
+    private void GetRigidbody()
+    {
+        rb = GetComponent<Rigidbody>();
     }
 
     private void SaveSliderValue()
@@ -83,6 +95,7 @@ public class CannonFire : MonoBehaviour
         {
             sliderReload.value = 1;
         }
+        sliderReload.gameObject.SetActive(true);
     }
     
     private void OnFirePerformed(InputAction.CallbackContext context)
@@ -95,7 +108,7 @@ public class CannonFire : MonoBehaviour
 
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {
-        if (reloadCoroutine == null && Mathf.Approximately(sliderReload.value, 0))
+        if (reloadCoroutine == null)
         {
             reloadCoroutine = StartCoroutine(ReloadSlider()); 
         }
@@ -171,7 +184,6 @@ public class CannonFire : MonoBehaviour
         Rigidbody cannonBallRb = cannonBallCopy.GetComponent<Rigidbody>();
         cannonBallRb.AddForce(shotPos.forward * firePower, ForceMode.Impulse);
         canFire = false;
-        cannonBallCopy.GetComponent<ReceiveDamage>().OnDestroyed += CannonBallDestroyed;
         fireSound.Play();
         unReloadCoroutine = StartCoroutine(ResetSlider());
     }
@@ -191,10 +203,5 @@ public class CannonFire : MonoBehaviour
             }
             yield return null;
         }
-    }
-
-    private void CannonBallDestroyed()
-    {
-        canFire = false;
     }
 }

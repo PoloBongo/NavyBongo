@@ -94,9 +94,18 @@ public class CameraControl : MonoBehaviour
 
     private void ManagerActivatedCannon(string _name)
     {
-        for (int i = 0; i < controlsManager.cannonControllers.Count; i++)
+        foreach (var t in controlsManager.cannonControllers)
         {
-            controlsManager.cannonControllers[i].GetComponent<CannonFire>().enabled = controlsManager.cannonControllers[i].name == _name;
+            var cannonFire = t.GetComponent<CannonFire>();
+            cannonFire.enabled = false;
+        }
+
+        foreach (var t in controlsManager.cannonControllers)
+        {
+            if (t.name == _name)
+            {
+                t.GetComponent<CannonFire>().enabled = true;
+            }
         }
     }
 }
