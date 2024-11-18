@@ -7,7 +7,8 @@ TagManager:
   - Damage
   - Cannon
   - CameraDrive
-  - Water
+  - UIDestruction
+  - PopupDamage
   layers:
   - Default
   - TransparentFX

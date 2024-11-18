@@ -630,7 +630,7 @@ GameObject:
   - component: {fileID: 7975781427330262387}
   m_Layer: 0
   m_Name: ship_darkCam 1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6497,7 +6497,7 @@ GameObject:
   - component: {fileID: 5867770295003306717}
   m_Layer: 0
   m_Name: cannon_left 1
-  m_TagString: Untagged
+  m_TagString: Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6594,9 +6594,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 14
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!114 &6459315616223574185
 MonoBehaviour:
@@ -6631,7 +6631,7 @@ MonoBehaviour:
   shotPos: {fileID: 4324629313721579057}
   firePower: -50
   sliderReload: {fileID: 0}
-  reloadSpeed: 0.1
+  reloadSpeed: 0.2
   fireSound: {fileID: 5867770295003306717}
 --- !u!82 &5867770295003306717
 AudioSource:
@@ -6747,7 +6747,7 @@ GameObject:
   - component: {fileID: 3988059987921147476}
   m_Layer: 0
   m_Name: cannon_right 1
-  m_TagString: Untagged
+  m_TagString: Cannon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6844,7 +6844,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 14
   m_CollisionDetection: 0
@@ -6881,7 +6881,7 @@ MonoBehaviour:
   shotPos: {fileID: 1850287800816001060}
   firePower: 50
   sliderReload: {fileID: 0}
-  reloadSpeed: 0.1
+  reloadSpeed: 0.2
   fireSound: {fileID: 3988059987921147476}
 --- !u!82 &3988059987921147476
 AudioSource:
