@@ -142,7 +142,9 @@ MonoBehaviour:
   explosionSplash: {fileID: 2402004485215833686, guid: ab019caa7d8f73e428e8f8e565187119, type: 3}
   explosionFire: {fileID: 1802078728324033080, guid: c11145ee33b207d429a4f954a140619f, type: 3}
   explosionSound: {fileID: 3431995388314941177}
-  popupDamage: {fileID: 8501929912331473874, guid: 0b9fdf1eb95b9bc4293c9f2141683c56, type: 3}
+  explosions:
+  - {fileID: 8300000, guid: a6c61dfb901a2d141928c3276565edc4, type: 3}
+  - {fileID: 8300000, guid: ef34779748d256448b07dfcc9ea67aad, type: 3}
 --- !u!82 &3431995388314941177
 AudioSource:
   m_ObjectHideFlags: 0
@@ -153,8 +155,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: a6c61dfb901a2d141928c3276565edc4, type: 3}
-  m_Resource: {fileID: 8300000, guid: a6c61dfb901a2d141928c3276565edc4, type: 3}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1

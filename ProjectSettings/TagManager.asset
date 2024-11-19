@@ -9,6 +9,8 @@ TagManager:
   - CameraDrive
   - UIDestruction
   - PopupDamage
+  - GameDataSave
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -1332,6 +1332,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cannon: {fileID: 7773799446105862602}
   bulletPrefab: {fileID: 2028610223150782852, guid: 08530e1aad2af4f4487ca53b6ed355cf, type: 3}
-  shootPos: {fileID: 0}
+  shootPos: {fileID: 7607355116589635895}
   speedRota: 10
   cooldownAck: 5

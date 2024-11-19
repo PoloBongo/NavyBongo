@@ -15,6 +15,9 @@ public class TowerController : MonoBehaviour
     private TowerAttack towerAttack;
     private bool canRiposte;
     
+    // data
+    private GameDataSave gameDataSave;
+    
     // event
     public delegate void OnDestroyAction(GameObject destroyedObject);
     public static event OnDestroyAction OnDestroyed;
@@ -29,6 +32,7 @@ public class TowerController : MonoBehaviour
         towerHealth.value = maxHealth;
         actualHealth = maxHealth;
         FindUIDestruction();
+        FindGameDataSave();
     }
 
     private void FindUIDestruction()
@@ -74,6 +78,8 @@ public class TowerController : MonoBehaviour
         float pourcentageDestruction = uiDestruction.value / getAllTowersCount.GetTowersCount();
         int pourcentageArrondi = Mathf.RoundToInt(pourcentageDestruction);
         destructionText.text = pourcentageArrondi + "% Destruction";
+        
+        gameDataSave.AddTotalPourcentageDestruction(pourcentageArrondi);
     }
     
     private void OnDestroy()
@@ -84,5 +90,14 @@ public class TowerController : MonoBehaviour
     public bool GetCanRisposte()
     {
         return canRiposte;
+    }
+    
+    private void FindGameDataSave()
+    {
+        GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
+        if (gameDataSaveGameObject != null)
+            gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
+        else
+            Debug.LogError("GameDataSave not found!");
     }
 }
