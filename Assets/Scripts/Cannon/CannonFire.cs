@@ -27,6 +27,9 @@ public class CannonFire : MonoBehaviour
     private bool canFire = false;
     private bool surchauffeCannon = false;
     private bool cancelReloadCannon = false;
+    
+    // data
+    private GameDataSave gameDataSave;
 
     // Sound
     [Header("Sound Cannon Settings")]
@@ -38,6 +41,8 @@ public class CannonFire : MonoBehaviour
         inputAction.Cannon.Fire.performed += OnFirePerformed;
         inputAction.Cannon.Reload.performed += OnReloadPerformed;
         inputAction.Cannon.Reload.canceled += OnReloadCanceled;
+
+        FindGameDataSave();
     }
 
     private void OnEnable()
@@ -186,6 +191,8 @@ public class CannonFire : MonoBehaviour
         canFire = false;
         fireSound.Play();
         unReloadCoroutine = StartCoroutine(ResetSlider());
+        
+        gameDataSave.AddTotalCannonFire();
     }
     
     private IEnumerator ResetSlider()
@@ -203,5 +210,14 @@ public class CannonFire : MonoBehaviour
             }
             yield return null;
         }
+    }
+    
+    private void FindGameDataSave()
+    {
+        GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
+        if (gameDataSaveGameObject != null)
+            gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
+        else
+            Debug.LogError("GameDataSave not found!");
     }
 }

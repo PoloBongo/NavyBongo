@@ -8,9 +8,14 @@ public class ReceiveDamage : MonoBehaviour
     [SerializeField] private GameObject explosionSplash;
     [SerializeField] private GameObject explosionFire;
     [SerializeField] private AudioSource explosionSound;
+    [SerializeField] AudioClip[] explosions; 
     private GameObject popupDamage;
     private bool stopUpdate = false;
     
+    // data
+    private GameDataSave gameDataSave;
+
+    private bool antiDupliData;
     // event
     public delegate void OnDestroyAction(GameObject destroyedObject);
     public static event OnDestroyAction OnDestroyed;
@@ -18,6 +23,8 @@ public class ReceiveDamage : MonoBehaviour
     private void Start()
     {
         popupDamage = FindInactiveObjectByTag("PopupDamage");
+        antiDupliData = true;
+        FindGameDataSave();
     }
 
     GameObject FindInactiveObjectByTag(string _tag)
@@ -37,8 +44,18 @@ public class ReceiveDamage : MonoBehaviour
     {
         Instantiate(explosionFire, gameObject.transform.position, gameObject.transform.rotation);
         if (popupDamage) popupDamage.SetActive(true);
-        explosionSound.Play();
-        Destroy(gameObject); 
+        CreateSound(1);
+        Destroy(gameObject);
+
+        if (!collision.gameObject.CompareTag("Enemy"))
+        {
+            gameDataSave.AddTotalAim(-10);
+            antiDupliData = true;
+        }
+        else
+        {
+            gameDataSave.AddTotalAim(10);
+        }
     }
 
     private void FixedUpdate()
@@ -46,7 +63,8 @@ public class ReceiveDamage : MonoBehaviour
         if (stopUpdate) return;
         if (!(transform.position.y < 0)) return;
         Instantiate(explosionSplash, transform.position, transform.rotation);
-        explosionSound.Play();
+        CreateSound(0);
+        if (!antiDupliData) gameDataSave.AddTotalAim(-10);
         Destroy(gameObject, 1f);
         stopUpdate = true;
     }
@@ -56,5 +74,23 @@ public class ReceiveDamage : MonoBehaviour
     private void OnDestroy()
     {
         OnDestroyed?.Invoke(gameObject);
+    }
+
+    private void CreateSound(int _index)
+    {
+        GameObject soundEffectCannon = new GameObject();
+        soundEffectCannon.transform.position = transform.position;
+        AudioSource clip = soundEffectCannon.AddComponent<AudioSource>();
+        clip.clip = explosions[_index];
+        clip.Play();
+    }
+    
+    private void FindGameDataSave()
+    {
+        GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
+        if (gameDataSaveGameObject != null)
+            gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
+        else
+            Debug.LogError("GameDataSave not found!");
     }
 }
