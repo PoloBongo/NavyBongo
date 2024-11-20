@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,11 +22,13 @@ public class BoatController : MonoBehaviour
     private float turnInput = 0f;
     private bool antiResetSpeedSound = false;
 
+    private bool antiBongo;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.drag = waterDrag;
-        boatParticlesSpeed.Stop();
+        if (boatParticlesSpeed) boatParticlesSpeed.Stop();
     }
 
     public void Initialize(PlayerInputAction _playerInputAction)
@@ -39,6 +40,7 @@ public class BoatController : MonoBehaviour
 
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
+        if (this == null) return;
         Vector2 input = context.ReadValue<Vector2>();
         forwardInput = input.y;
         turnInput = input.x;
@@ -47,7 +49,8 @@ public class BoatController : MonoBehaviour
         {
             if (antiResetSpeedSound) return;
             antiResetSpeedSound = true;
-            boatParticlesSpeedRef = StartCoroutine(StartParticlesSpeedAndSound());
+            if (this != null)
+                boatParticlesSpeedRef = StartCoroutine(StartParticlesSpeedAndSound());
         }
         else
         {
@@ -59,6 +62,7 @@ public class BoatController : MonoBehaviour
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
+        if (this == null) return;
         forwardInput = 0f;
         turnInput = 0f;
         StopParticlesSpeedAndSound();
@@ -87,17 +91,27 @@ public class BoatController : MonoBehaviour
     private IEnumerator StartParticlesSpeedAndSound()
     {
         yield return new WaitForSeconds(1.5f);
-        boatParticlesSpeed.Play();
+        if (boatParticlesSpeed) boatParticlesSpeed.Play();
         boatSpeedSound.Play();
         boatParticlesSpeedRef = null;
     }
 
     private void StopParticlesSpeedAndSound()
     {
-        if (boatParticlesSpeed.isPlaying) boatParticlesSpeed.Stop();
-        if (boatSpeedSound.isPlaying) boatSpeedSound.Stop();
-        if (boatParticlesSpeedRef == null) return;
-        StopCoroutine(boatParticlesSpeedRef);
-        boatParticlesSpeedRef = null;
+        if (boatParticlesSpeed != null && boatParticlesSpeed.isPlaying) 
+        {
+            boatParticlesSpeed.Stop();
+        }
+
+        if (boatSpeedSound != null && boatSpeedSound.isPlaying) 
+        {
+            boatSpeedSound.Stop();
+        }
+
+        if (boatParticlesSpeedRef != null) 
+        {
+            StopCoroutine(boatParticlesSpeedRef);
+            boatParticlesSpeedRef = null;
+        }
     }
 }

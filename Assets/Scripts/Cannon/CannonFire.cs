@@ -113,9 +113,10 @@ public class CannonFire : MonoBehaviour
 
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {
+        if (this == null) return;
         if (reloadCoroutine == null)
         {
-            reloadCoroutine = StartCoroutine(ReloadSlider()); 
+            reloadCoroutine = StartCoroutine(ReloadSlider());
         }
 
         StopCoroutineResetReloadCoroutine();
@@ -130,6 +131,7 @@ public class CannonFire : MonoBehaviour
     
     private void OnReloadCanceled(InputAction.CallbackContext context)
     {
+        if (this == null) return;
         ResetReloadSliderFunc();
         StopCoroutineReloadCoroutine();
     }
@@ -143,6 +145,7 @@ public class CannonFire : MonoBehaviour
 
     private void ResetReloadSliderFunc()
     {
+        if (this == null) return;
         if (resetReloadCoroutine == null && sliderReload.value < 1 && unReloadCoroutine == null)
         {
             resetReloadCoroutine = StartCoroutine(ResetReloadSlider());
@@ -219,5 +222,22 @@ public class CannonFire : MonoBehaviour
             gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
         else
             Debug.LogError("GameDataSave not found!");
+    }
+
+    public void SetSliderReload(Slider _sliderReload)
+    {
+        sliderReload = _sliderReload;
+    }
+
+    private void OnDestroy()
+    {
+        inputAction.Cannon.Fire.performed -= OnFirePerformed;
+        StopCoroutineResetReloadCoroutine();
+        StopCoroutineReloadCoroutine();
+        canFire = false;
+        surchauffeCannon = false;
+        cancelReloadCannon = false;
+        unReloadCoroutine = null;
+        if (sliderReload) sliderReload.gameObject.SetActive(false);
     }
 }

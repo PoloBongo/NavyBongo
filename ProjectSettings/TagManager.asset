@@ -11,6 +11,7 @@ TagManager:
   - PopupDamage
   - GameDataSave
   - Enemy
+  - ReloadCannon
   layers:
   - Default
   - TransparentFX

@@ -80,7 +80,10 @@ public class ReceiveDamage : MonoBehaviour
     {
         GameObject soundEffectCannon = new GameObject();
         soundEffectCannon.transform.position = transform.position;
+        soundEffectCannon.AddComponent<AutoDestruction>();
         AudioSource clip = soundEffectCannon.AddComponent<AudioSource>();
+        clip.pitch = 1.3f;
+        clip.spatialBlend = 1f;
         clip.clip = explosions[_index];
         clip.Play();
     }

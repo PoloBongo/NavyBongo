@@ -276,6 +276,34 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Shop"",
+            ""id"": ""f2e65ef0-3e26-4d65-b677-27f17264a846"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenShop"",
+                    ""type"": ""Button"",
+                    ""id"": ""d7051d0e-d181-4380-8dcf-f8b689eaaeb8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""3bdfa066-daa8-4005-8afc-0ba38f327f2c"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenShop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -292,6 +320,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Cannon_Rotate = m_Cannon.FindAction("Rotate", throwIfNotFound: true);
         m_Cannon_Fire = m_Cannon.FindAction("Fire", throwIfNotFound: true);
         m_Cannon_Reload = m_Cannon.FindAction("Reload", throwIfNotFound: true);
+        // Shop
+        m_Shop = asset.FindActionMap("Shop", throwIfNotFound: true);
+        m_Shop_OpenShop = m_Shop.FindAction("OpenShop", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -511,6 +542,52 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         }
     }
     public CannonActions @Cannon => new CannonActions(this);
+
+    // Shop
+    private readonly InputActionMap m_Shop;
+    private List<IShopActions> m_ShopActionsCallbackInterfaces = new List<IShopActions>();
+    private readonly InputAction m_Shop_OpenShop;
+    public struct ShopActions
+    {
+        private @PlayerInputAction m_Wrapper;
+        public ShopActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @OpenShop => m_Wrapper.m_Shop_OpenShop;
+        public InputActionMap Get() { return m_Wrapper.m_Shop; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ShopActions set) { return set.Get(); }
+        public void AddCallbacks(IShopActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ShopActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ShopActionsCallbackInterfaces.Add(instance);
+            @OpenShop.started += instance.OnOpenShop;
+            @OpenShop.performed += instance.OnOpenShop;
+            @OpenShop.canceled += instance.OnOpenShop;
+        }
+
+        private void UnregisterCallbacks(IShopActions instance)
+        {
+            @OpenShop.started -= instance.OnOpenShop;
+            @OpenShop.performed -= instance.OnOpenShop;
+            @OpenShop.canceled -= instance.OnOpenShop;
+        }
+
+        public void RemoveCallbacks(IShopActions instance)
+        {
+            if (m_Wrapper.m_ShopActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IShopActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ShopActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ShopActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public ShopActions @Shop => new ShopActions(this);
     public interface IMovementActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -525,5 +602,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnRotate(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+    }
+    public interface IShopActions
+    {
+        void OnOpenShop(InputAction.CallbackContext context);
     }
 }

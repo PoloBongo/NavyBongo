@@ -32,13 +32,20 @@ public class FitToWaterSurfaceBurst : MonoBehaviour
     NativeArray<int> stepCountBuffer;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         boxCollider = this.GetComponentInChildren<BoxCollider>();
+        if (!waterSurface) FoundWaterSurface();
         Reset();
     }
 
-    void Reset()
+    private void FoundWaterSurface()
+    {
+        WaterSurface water = (WaterSurface)FindAnyObjectByType(typeof(WaterSurface));
+        waterSurface = water;
+    }
+
+    private void Reset()
     {
         //Dispose buffer if already created
         OnDestroy();
@@ -61,9 +68,9 @@ public class FitToWaterSurfaceBurst : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (waterSurface == null)
+        if (!waterSurface)
             return;
         if (!targetPositionBuffer.IsCreated)
             Reset();
@@ -119,7 +126,7 @@ public class FitToWaterSurfaceBurst : MonoBehaviour
         );
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         if(directionBuffer.IsCreated)           directionBuffer.Dispose();
         if(targetPositionBuffer.IsCreated)      targetPositionBuffer.Dispose();
@@ -128,7 +135,7 @@ public class FitToWaterSurfaceBurst : MonoBehaviour
         if(stepCountBuffer.IsCreated)           stepCountBuffer.Dispose();
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         OnDestroy();
     }

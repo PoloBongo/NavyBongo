@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e06585800962f94191760b3762bd14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
+  damage: 50
   explosionSplash: {fileID: 2402004485215833686, guid: ab019caa7d8f73e428e8f8e565187119, type: 3}
   explosionFire: {fileID: 1802078728324033080, guid: c11145ee33b207d429a4f954a140619f, type: 3}
   explosionSound: {fileID: 3431995388314941177}
