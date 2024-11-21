@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerAttack : MonoBehaviour
@@ -22,6 +20,21 @@ public class TowerAttack : MonoBehaviour
         if (!towerController) Debug.LogError("TowerController cannot be null");
         canAttack = towerController.GetCanRisposte();
         FindPlayerBoat();
+    }
+    
+    private void OnEnable()
+    {
+        InstantiateBoat.OnUpdateTarget += HandleInitFoundNewPlayer;
+    }
+
+    private void OnDisable()
+    {
+        InstantiateBoat.OnUpdateTarget -= HandleInitFoundNewPlayer;
+    }
+
+    private void HandleInitFoundNewPlayer(GameObject _player)
+    {
+        player = _player;
     }
 
     public void UpdateCheckRiposte()
@@ -94,7 +107,7 @@ public class TowerAttack : MonoBehaviour
             // on ajuste la puissance selon la distance du player
             float firePower = distanceToPlayer * 2f;
             // on fix une limite de puissance pour le côté un peu réaliste
-            firePower = Mathf.Clamp(firePower, 10f, 200f);
+            firePower = Mathf.Clamp(firePower, 10f, 150f);
             
             cannonBallRb.AddForce(directionToPlayer * firePower, ForceMode.Impulse);
         }

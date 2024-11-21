@@ -254,6 +254,62 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Shop",
+            "id": "f2e65ef0-3e26-4d65-b677-27f17264a846",
+            "actions": [
+                {
+                    "name": "OpenShop",
+                    "type": "Button",
+                    "id": "d7051d0e-d181-4380-8dcf-f8b689eaaeb8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "3bdfa066-daa8-4005-8afc-0ba38f327f2c",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenShop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Magnet",
+            "id": "0463a8d6-f051-4a7f-a7fa-b69f363a13b2",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "f5725287-fb2f-4b85-96f7-2e43ec6d89a6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5e911f1f-d601-4182-a355-b5acb419d12f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

@@ -276,6 +276,62 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Shop"",
+            ""id"": ""f2e65ef0-3e26-4d65-b677-27f17264a846"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenShop"",
+                    ""type"": ""Button"",
+                    ""id"": ""d7051d0e-d181-4380-8dcf-f8b689eaaeb8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""3bdfa066-daa8-4005-8afc-0ba38f327f2c"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenShop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Magnet"",
+            ""id"": ""0463a8d6-f051-4a7f-a7fa-b69f363a13b2"",
+            ""actions"": [
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5725287-fb2f-4b85-96f7-2e43ec6d89a6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""5e911f1f-d601-4182-a355-b5acb419d12f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -292,6 +348,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Cannon_Rotate = m_Cannon.FindAction("Rotate", throwIfNotFound: true);
         m_Cannon_Fire = m_Cannon.FindAction("Fire", throwIfNotFound: true);
         m_Cannon_Reload = m_Cannon.FindAction("Reload", throwIfNotFound: true);
+        // Shop
+        m_Shop = asset.FindActionMap("Shop", throwIfNotFound: true);
+        m_Shop_OpenShop = m_Shop.FindAction("OpenShop", throwIfNotFound: true);
+        // Magnet
+        m_Magnet = asset.FindActionMap("Magnet", throwIfNotFound: true);
+        m_Magnet_Click = m_Magnet.FindAction("Click", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -511,6 +573,98 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         }
     }
     public CannonActions @Cannon => new CannonActions(this);
+
+    // Shop
+    private readonly InputActionMap m_Shop;
+    private List<IShopActions> m_ShopActionsCallbackInterfaces = new List<IShopActions>();
+    private readonly InputAction m_Shop_OpenShop;
+    public struct ShopActions
+    {
+        private @PlayerInputAction m_Wrapper;
+        public ShopActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @OpenShop => m_Wrapper.m_Shop_OpenShop;
+        public InputActionMap Get() { return m_Wrapper.m_Shop; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ShopActions set) { return set.Get(); }
+        public void AddCallbacks(IShopActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ShopActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ShopActionsCallbackInterfaces.Add(instance);
+            @OpenShop.started += instance.OnOpenShop;
+            @OpenShop.performed += instance.OnOpenShop;
+            @OpenShop.canceled += instance.OnOpenShop;
+        }
+
+        private void UnregisterCallbacks(IShopActions instance)
+        {
+            @OpenShop.started -= instance.OnOpenShop;
+            @OpenShop.performed -= instance.OnOpenShop;
+            @OpenShop.canceled -= instance.OnOpenShop;
+        }
+
+        public void RemoveCallbacks(IShopActions instance)
+        {
+            if (m_Wrapper.m_ShopActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IShopActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ShopActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ShopActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public ShopActions @Shop => new ShopActions(this);
+
+    // Magnet
+    private readonly InputActionMap m_Magnet;
+    private List<IMagnetActions> m_MagnetActionsCallbackInterfaces = new List<IMagnetActions>();
+    private readonly InputAction m_Magnet_Click;
+    public struct MagnetActions
+    {
+        private @PlayerInputAction m_Wrapper;
+        public MagnetActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Click => m_Wrapper.m_Magnet_Click;
+        public InputActionMap Get() { return m_Wrapper.m_Magnet; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MagnetActions set) { return set.Get(); }
+        public void AddCallbacks(IMagnetActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MagnetActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MagnetActionsCallbackInterfaces.Add(instance);
+            @Click.started += instance.OnClick;
+            @Click.performed += instance.OnClick;
+            @Click.canceled += instance.OnClick;
+        }
+
+        private void UnregisterCallbacks(IMagnetActions instance)
+        {
+            @Click.started -= instance.OnClick;
+            @Click.performed -= instance.OnClick;
+            @Click.canceled -= instance.OnClick;
+        }
+
+        public void RemoveCallbacks(IMagnetActions instance)
+        {
+            if (m_Wrapper.m_MagnetActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMagnetActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MagnetActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MagnetActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MagnetActions @Magnet => new MagnetActions(this);
     public interface IMovementActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -525,5 +679,13 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         void OnRotate(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+    }
+    public interface IShopActions
+    {
+        void OnOpenShop(InputAction.CallbackContext context);
+    }
+    public interface IMagnetActions
+    {
+        void OnClick(InputAction.CallbackContext context);
     }
 }

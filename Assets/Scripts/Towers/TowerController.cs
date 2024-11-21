@@ -84,6 +84,7 @@ public class TowerController : MonoBehaviour
     
     private void OnDestroy()
     {
+        gameDataSave.AddBerrys(100);
         OnDestroyed?.Invoke(gameObject);
     }
 

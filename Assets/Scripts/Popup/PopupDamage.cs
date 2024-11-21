@@ -14,9 +14,9 @@ public class PopupDamage : MonoBehaviour
         ReceiveDamage.OnDestroyed -= HandleObjectDestruction;
     }
 
-    private void HandleObjectDestruction(GameObject destroyedObject)
+    private void HandleObjectDestruction(GameObject destroyedObject, bool hasHit)
     {
-        showPopupDamage ??= StartCoroutine(ShowPopupDamage());
+        if (hasHit) showPopupDamage ??= StartCoroutine(ShowPopupDamage());
     }
     
     private IEnumerator ShowPopupDamage()

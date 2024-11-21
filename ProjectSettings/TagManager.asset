@@ -11,6 +11,9 @@ TagManager:
   - PopupDamage
   - GameDataSave
   - Enemy
+  - ReloadCannon
+  - Throwable
+  - MagnetCam
   layers:
   - Default
   - TransparentFX
@@ -18,7 +21,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Obstacle
   - 
   - 
   - 

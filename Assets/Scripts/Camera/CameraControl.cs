@@ -1,14 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class CameraControl : MonoBehaviour
 {
     [Header("Listes des cameras")]
-    [SerializeField] private List<CinemachineVirtualCamera> cameras;
+    public List<CinemachineVirtualCamera> cameras;
     
     private ControlsManager controlsManager;
     
@@ -24,38 +24,73 @@ public class CameraControl : MonoBehaviour
         indexCamera = 0;
         maximumPriority = 10;
         minimumPriority = 5;
+        //FindCameras();
+    }
+    
+    private void OnEnable()
+    {
+        InstantiateBoat.OnInit += HandleInitControlsManager;
+    }
+    
+    private void OnDisable()
+    {
+        InstantiateBoat.OnInit -= HandleInitControlsManager;
+    }
+    
+    private void HandleInitControlsManager()
+    {
+        StartCoroutine(DelayedSetup());
+    }
+
+    private IEnumerator DelayedSetup()
+    {
+        yield return null;
+
+        FindCameras();
+    }
+    
+    private void FindCameras()
+    {
+        cameras.Clear();
+        var foundCameras = FindObjectsByType<CinemachineVirtualCamera>(FindObjectsSortMode.None);
+        foreach (var camera in foundCameras)
+        {
+            if (camera)
+            {
+                cameras.Add(camera);
+            }
+        }
+        
+        cameras.Sort((camera1, camera2) => camera2.Priority.CompareTo(camera1.Priority));
+        indexCamera = 0;
         totalNumbersOfCameras = cameras.Count - 1;
-        SwitchPriorityCamera();
     }
 
     public void Initialize(PlayerInputAction _playerInputAction)
     {
         inputAction = _playerInputAction;
         inputAction.CameraController.Browse.performed += OnBrowsePerformed;
-        inputAction.CameraController.Browse.canceled += OnBrowseCanceled;
     }
 
     private void OnBrowsePerformed(InputAction.CallbackContext context)
     {
+        if (this == null) return;
         float browseValue = context.ReadValue<float>();
         switch (browseValue)
         {
             case > 0:
                 indexCamera++;
+                if (indexCamera == totalNumbersOfCameras + 1) indexCamera = 0;
                 indexCamera = Mathf.Clamp(indexCamera, 0, totalNumbersOfCameras);
                 SwitchPriorityCamera();
                 break;
             case < 0:
                 indexCamera--;
+                if (indexCamera == -1) indexCamera = totalNumbersOfCameras;
                 indexCamera = Mathf.Clamp(indexCamera, 0, totalNumbersOfCameras);
                 SwitchPriorityCamera();
                 break;
         }
-    }
-    
-    private void OnBrowseCanceled(InputAction.CallbackContext context)
-    {
-        
     }
 
     private void SwitchPriorityCamera()
@@ -86,6 +121,9 @@ public class CameraControl : MonoBehaviour
             case "Cannon":
                 controlsManager.ActivateCannonControls();
                 break;
+            case "MagnetCam":
+                controlsManager.ActivateMagnetControls();
+                break;
             default:
                 controlsManager.ActivateBoatControls();
                 break;
@@ -94,18 +132,35 @@ public class CameraControl : MonoBehaviour
 
     private void ManagerActivatedCannon(string _name)
     {
+        CleanupCannonControllers();
+
         foreach (var t in controlsManager.cannonControllers)
         {
+            if (!t) continue;
             var cannonFire = t.GetComponent<CannonFire>();
-            cannonFire.enabled = false;
+            if (cannonFire)
+            {
+                cannonFire.enabled = false;
+            }
         }
 
         foreach (var t in controlsManager.cannonControllers)
         {
+            if (!t) continue;
             if (t.name == _name)
             {
-                t.GetComponent<CannonFire>().enabled = true;
+                var cannonFire = t.GetComponent<CannonFire>();
+                if (cannonFire)
+                {
+                    cannonFire.enabled = true;
+                }
             }
         }
     }
+    
+    private void CleanupCannonControllers()
+    {
+        controlsManager.cannonControllers.RemoveAll(item => item == null);
+    }
+
 }

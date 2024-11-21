@@ -142,6 +142,7 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+*.Build
 
 # Crashlytics generated file
 
