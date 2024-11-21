@@ -16,11 +16,24 @@ public class InstantiateBoat : MonoBehaviour
     public delegate void OnFinishSpawnBoat();
     public static event OnFinishSpawnBoat OnInit;
     
+    public delegate void OnUpdateTargetTower(GameObject _newPlayerBoat);
+    public static event OnUpdateTargetTower OnUpdateTarget;
+    
     private void Awake()
     {
+        FindGameDataSave();
         if (!gameDataSave) Debug.LogError("GameSave not found in : " + gameObject.name);
         actualBoatName = "BoatA";
         GetActualBoat();
+    }
+    
+    private void FindGameDataSave()
+    {
+        GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
+        if (gameDataSaveGameObject != null)
+            gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
+        else
+            Debug.LogError("GameDataSave not found!");
     }
 
     private void GetActualBoat()
@@ -53,6 +66,7 @@ public class InstantiateBoat : MonoBehaviour
         }
 
         OnInit?.Invoke();
+        OnUpdateTarget?.Invoke(newBoat);
     }
     
     private void OnEnable()

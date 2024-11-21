@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,10 +17,10 @@ public class OrientationCanon : MonoBehaviour
     public void Initialize(PlayerInputAction _playerInputAction)
     {
         inputAction = _playerInputAction;
-        inputAction.Cannon.Elevate.performed += OnElevatePerformed;
-        inputAction.Cannon.Elevate.canceled += OnElevateCanceled;
-        inputAction.Cannon.Rotate.performed += OnRotatePerformed;
-        inputAction.Cannon.Rotate.canceled += OnRotateCanceled;
+        inputAction.Cannon.Elevate.performed -= OnElevatePerformed;
+        inputAction.Cannon.Elevate.canceled -= OnElevateCanceled;
+        inputAction.Cannon.Rotate.performed -= OnRotatePerformed;
+        inputAction.Cannon.Rotate.canceled -= OnRotateCanceled;
         
         canonFire.Initialize(inputAction);
     }
@@ -58,5 +59,21 @@ public class OrientationCanon : MonoBehaviour
         if (rotationDirectionY == 0f) return;
         Quaternion deltaRotation = Quaternion.Euler(0, rotationDirectionY * rotationSpeed * Time.fixedDeltaTime, 0);
         transform.rotation = deltaRotation * transform.rotation;
+    }
+
+    public void OnEnableObject()
+    {
+        inputAction.Cannon.Elevate.performed += OnElevatePerformed;
+        inputAction.Cannon.Elevate.canceled += OnElevateCanceled;
+        inputAction.Cannon.Rotate.performed += OnRotatePerformed;
+        inputAction.Cannon.Rotate.canceled += OnRotateCanceled;
+    }
+    
+    public void OnDisableObject()
+    {
+        inputAction.Cannon.Elevate.performed -= OnElevatePerformed;
+        inputAction.Cannon.Elevate.canceled -= OnElevateCanceled;
+        inputAction.Cannon.Rotate.performed -= OnRotatePerformed;
+        inputAction.Cannon.Rotate.canceled -= OnRotateCanceled;
     }
 }

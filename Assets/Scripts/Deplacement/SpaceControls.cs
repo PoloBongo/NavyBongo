@@ -304,6 +304,34 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Magnet"",
+            ""id"": ""0463a8d6-f051-4a7f-a7fa-b69f363a13b2"",
+            ""actions"": [
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""f5725287-fb2f-4b85-96f7-2e43ec6d89a6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""5e911f1f-d601-4182-a355-b5acb419d12f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -323,6 +351,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         // Shop
         m_Shop = asset.FindActionMap("Shop", throwIfNotFound: true);
         m_Shop_OpenShop = m_Shop.FindAction("OpenShop", throwIfNotFound: true);
+        // Magnet
+        m_Magnet = asset.FindActionMap("Magnet", throwIfNotFound: true);
+        m_Magnet_Click = m_Magnet.FindAction("Click", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -588,6 +619,52 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         }
     }
     public ShopActions @Shop => new ShopActions(this);
+
+    // Magnet
+    private readonly InputActionMap m_Magnet;
+    private List<IMagnetActions> m_MagnetActionsCallbackInterfaces = new List<IMagnetActions>();
+    private readonly InputAction m_Magnet_Click;
+    public struct MagnetActions
+    {
+        private @PlayerInputAction m_Wrapper;
+        public MagnetActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Click => m_Wrapper.m_Magnet_Click;
+        public InputActionMap Get() { return m_Wrapper.m_Magnet; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MagnetActions set) { return set.Get(); }
+        public void AddCallbacks(IMagnetActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MagnetActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MagnetActionsCallbackInterfaces.Add(instance);
+            @Click.started += instance.OnClick;
+            @Click.performed += instance.OnClick;
+            @Click.canceled += instance.OnClick;
+        }
+
+        private void UnregisterCallbacks(IMagnetActions instance)
+        {
+            @Click.started -= instance.OnClick;
+            @Click.performed -= instance.OnClick;
+            @Click.canceled -= instance.OnClick;
+        }
+
+        public void RemoveCallbacks(IMagnetActions instance)
+        {
+            if (m_Wrapper.m_MagnetActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMagnetActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MagnetActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MagnetActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MagnetActions @Magnet => new MagnetActions(this);
     public interface IMovementActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -606,5 +683,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     public interface IShopActions
     {
         void OnOpenShop(InputAction.CallbackContext context);
+    }
+    public interface IMagnetActions
+    {
+        void OnClick(InputAction.CallbackContext context);
     }
 }

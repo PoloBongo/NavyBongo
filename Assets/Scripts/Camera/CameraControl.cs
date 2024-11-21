@@ -59,14 +59,11 @@ public class CameraControl : MonoBehaviour
             {
                 cameras.Add(camera);
             }
-            else
-            {
-                Debug.LogWarning("Found a null OrientationCanon reference");
-            }
         }
         
+        cameras.Sort((camera1, camera2) => camera2.Priority.CompareTo(camera1.Priority));
+        indexCamera = 0;
         totalNumbersOfCameras = cameras.Count - 1;
-        SwitchPriorityCamera();
     }
 
     public void Initialize(PlayerInputAction _playerInputAction)
@@ -83,11 +80,13 @@ public class CameraControl : MonoBehaviour
         {
             case > 0:
                 indexCamera++;
+                if (indexCamera == totalNumbersOfCameras + 1) indexCamera = 0;
                 indexCamera = Mathf.Clamp(indexCamera, 0, totalNumbersOfCameras);
                 SwitchPriorityCamera();
                 break;
             case < 0:
                 indexCamera--;
+                if (indexCamera == -1) indexCamera = totalNumbersOfCameras;
                 indexCamera = Mathf.Clamp(indexCamera, 0, totalNumbersOfCameras);
                 SwitchPriorityCamera();
                 break;
@@ -121,6 +120,9 @@ public class CameraControl : MonoBehaviour
                 break;
             case "Cannon":
                 controlsManager.ActivateCannonControls();
+                break;
+            case "MagnetCam":
+                controlsManager.ActivateMagnetControls();
                 break;
             default:
                 controlsManager.ActivateBoatControls();

@@ -91,6 +91,11 @@ public class GameDataSave : MonoBehaviour
     {
         berrys += _value;
     }
+    
+    public void RemoveBerrys(int _value)
+    {
+        berrys -= _value;
+    }
 
     public Transform GetActualPosPlayerBoat()
     {

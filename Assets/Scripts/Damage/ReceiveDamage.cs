@@ -11,17 +11,22 @@ public class ReceiveDamage : MonoBehaviour
     [SerializeField] AudioClip[] explosions; 
     private GameObject popupDamage;
     private bool stopUpdate = false;
+    private bool hasHit;
     
     // data
     private GameDataSave gameDataSave;
 
     private bool antiDupliData;
     // event
-    public delegate void OnDestroyAction(GameObject destroyedObject);
+    public delegate void OnDestroyAction(GameObject destroyedObject, bool hasHit);
     public static event OnDestroyAction OnDestroyed;
+    
+    public delegate void OnHitPlayer(int _damage);
+    public static event OnHitPlayer OnHit;
 
     private void Start()
     {
+        hasHit = false;
         popupDamage = FindInactiveObjectByTag("PopupDamage");
         antiDupliData = true;
         FindGameDataSave();
@@ -43,7 +48,6 @@ public class ReceiveDamage : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Instantiate(explosionFire, gameObject.transform.position, gameObject.transform.rotation);
-        if (popupDamage) popupDamage.SetActive(true);
         CreateSound(1);
         Destroy(gameObject);
 
@@ -54,7 +58,14 @@ public class ReceiveDamage : MonoBehaviour
         }
         else
         {
+            if (popupDamage) popupDamage.SetActive(true);
+            hasHit = true;
             gameDataSave.AddTotalAim(10);
+        }
+        
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            OnHit?.Invoke(damage);
         }
     }
 
@@ -73,7 +84,7 @@ public class ReceiveDamage : MonoBehaviour
 
     private void OnDestroy()
     {
-        OnDestroyed?.Invoke(gameObject);
+        OnDestroyed?.Invoke(gameObject, hasHit);
     }
 
     private void CreateSound(int _index)

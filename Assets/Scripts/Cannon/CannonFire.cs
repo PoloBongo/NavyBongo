@@ -15,6 +15,7 @@ public class CannonFire : MonoBehaviour
     [SerializeField] private GameObject cannonBall;
     [SerializeField] private Transform shotPos;
     [SerializeField] private float firePower = 10f;
+    [SerializeField] private OrientationCanon orientationCanon;
     private Rigidbody rb;
 
     [Header("Cannon UI")]
@@ -47,6 +48,7 @@ public class CannonFire : MonoBehaviour
 
     private void OnEnable()
     {
+        orientationCanon.OnEnableObject();
         if (!rb) GetRigidbody();
         rb.isKinematic = false;
         sliderReload.gameObject.SetActive(true);
@@ -55,12 +57,25 @@ public class CannonFire : MonoBehaviour
         RestoreSliderValue();
         canFire = !(sliderReload.value < 1);
         surchauffeCannon = !(sliderReload.value < 1);
-        cancelReloadCannon = false;
-        ResetReloadSliderFunc();
+        if (sliderReload.value < 1)
+        {
+            cancelReloadCannon = true;
+            inputAction.Cannon.Reload.performed -= OnReloadPerformed;
+            inputAction.Cannon.Reload.canceled -= OnReloadCanceled;
+            inputAction.Cannon.Disable();
+            unReloadCoroutine = StartCoroutine(ResetSlider());
+        }
+        else
+        {
+            inputAction.Cannon.Reload.performed += OnReloadPerformed;
+            inputAction.Cannon.Reload.canceled += OnReloadCanceled;
+            inputAction.Cannon.Enable();
+        }
     }
     
     private void OnDisable()
     {
+        orientationCanon.OnDisableObject();
         if (!rb) GetRigidbody();
         rb.isKinematic = true;
         SaveSliderValue();
@@ -71,6 +86,12 @@ public class CannonFire : MonoBehaviour
         cancelReloadCannon = false;
         unReloadCoroutine = null;
         if (sliderReload) sliderReload.gameObject.SetActive(false);
+        if (sliderReload.value < 1)
+        {
+            inputAction.Cannon.Reload.performed -= OnReloadPerformed;
+            inputAction.Cannon.Reload.canceled -= OnReloadCanceled;
+            inputAction.Cannon.Disable();
+        }
     }
     
     private void GetRigidbody()
@@ -114,11 +135,11 @@ public class CannonFire : MonoBehaviour
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {
         if (this == null) return;
-        if (reloadCoroutine == null)
-        {
-            reloadCoroutine = StartCoroutine(ReloadSlider());
-        }
-
+        
+        if (!Mathf.Approximately(sliderReload.value, 0) || reloadCoroutine != null || surchauffeCannon || cancelReloadCannon)
+            return;
+        
+        reloadCoroutine = StartCoroutine(ReloadSlider());
         StopCoroutineResetReloadCoroutine();
     }
 
@@ -132,8 +153,7 @@ public class CannonFire : MonoBehaviour
     private void OnReloadCanceled(InputAction.CallbackContext context)
     {
         if (this == null) return;
-        ResetReloadSliderFunc();
-        StopCoroutineReloadCoroutine();
+        //StopCoroutineReloadCoroutine();
     }
     
     private void StopCoroutineReloadCoroutine()
@@ -143,56 +163,36 @@ public class CannonFire : MonoBehaviour
         reloadCoroutine = null;
     }
 
-    private void ResetReloadSliderFunc()
-    {
-        if (this == null) return;
-        if (resetReloadCoroutine == null && sliderReload.value < 1 && unReloadCoroutine == null)
-        {
-            resetReloadCoroutine = StartCoroutine(ResetReloadSlider());
-        }
-    }
-
     private IEnumerator ReloadSlider()
     {
-        while (true && !surchauffeCannon)
+        while (true)
         {
             sliderReload.value += reloadSpeed * Time.deltaTime; 
             sliderReload.value = Mathf.Clamp(sliderReload.value, 0, 1);
             if (Mathf.Approximately(sliderReload.value, 1))
             {
                 canFire = true;
+                reloadCoroutine = null;
                 break;
             }
-            yield return null;
-        }
-    }
-    
-    private IEnumerator ResetReloadSlider()
-    {
-        cancelReloadCannon = true;
-        while (cancelReloadCannon)
-        {
-            sliderReload.value -= reloadSpeed * Time.deltaTime; 
-            sliderReload.value = Mathf.Clamp(sliderReload.value, 0, 1);
-            if (Mathf.Approximately(sliderReload.value, 0))
-            {
-                canFire = false;
-                surchauffeCannon = false;
-                cancelReloadCannon = false;
-                break;
-            };
             yield return null;
         }
     }
 
     private void FireCannon()
     {
+        if (!canFire)
+        {
+            canFire = !(sliderReload.value < 1);
+        }
         if (!canFire) return;
         GameObject cannonBallCopy = Instantiate(cannonBall, shotPos.position, shotPos.rotation) as GameObject;
         Rigidbody cannonBallRb = cannonBallCopy.GetComponent<Rigidbody>();
         cannonBallRb.AddForce(shotPos.forward * firePower, ForceMode.Impulse);
         canFire = false;
+        surchauffeCannon = true;
         fireSound.Play();
+        inputAction.Cannon.Reload.Disable();
         unReloadCoroutine = StartCoroutine(ResetSlider());
         
         gameDataSave.AddTotalCannonFire();
@@ -200,14 +200,16 @@ public class CannonFire : MonoBehaviour
     
     private IEnumerator ResetSlider()
     {
-        surchauffeCannon = true;
-        while (surchauffeCannon)
+        while (surchauffeCannon || cancelReloadCannon)
         {
             sliderReload.value -= reloadSpeed * Time.deltaTime; 
             sliderReload.value = Mathf.Clamp(sliderReload.value, 0, 1);
             if (Mathf.Approximately(sliderReload.value, 0))
             {
+                inputAction.Cannon.Reload.performed += OnReloadPerformed;
+                inputAction.Cannon.Enable();
                 surchauffeCannon = false;
+                cancelReloadCannon = false;
                 unReloadCoroutine = null;
                 break;
             }
@@ -218,7 +220,7 @@ public class CannonFire : MonoBehaviour
     private void FindGameDataSave()
     {
         GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
-        if (gameDataSaveGameObject != null)
+        if (gameDataSaveGameObject)
             gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
         else
             Debug.LogError("GameDataSave not found!");

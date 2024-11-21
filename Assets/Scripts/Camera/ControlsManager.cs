@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +9,24 @@ public class ControlsManager : MonoBehaviour
     private PlayerInputAction playerInputAction;
     private CameraControl cameraControl;
     private BoatController boatController;
+    private MagnetController magnetController;
     public List<OrientationCanon> cannonControllers;
     public ShopControls shopControls;
+
+    private void Awake()
+    {
+        FindGameDataSave();
+    }
     
+    private void FindGameDataSave()
+    {
+        GameObject gameDataSaveGameObject = GameObject.FindGameObjectWithTag("GameDataSave");
+        if (gameDataSaveGameObject != null)
+            gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
+        else
+            Debug.LogError("GameDataSave not found!");
+    }
+
     private void OnEnable()
     {
         playerInputAction = new PlayerInputAction();
@@ -37,6 +53,7 @@ public class ControlsManager : MonoBehaviour
         boatController?.Initialize(playerInputAction);
         cameraControl?.Initialize(playerInputAction);
         shopControls?.Initialize(playerInputAction);
+        magnetController?.Initialize(playerInputAction);
 
         foreach (var t in cannonControllers)
         {
@@ -68,6 +85,13 @@ public class ControlsManager : MonoBehaviour
         if (!boatController) Debug.LogError("BoatController not found in " + gameObject.name);
     }
     
+    private void FindMagnetController()
+    {
+        MagnetController foundMagnetController = (MagnetController)FindAnyObjectByType(typeof(MagnetController));
+        magnetController = foundMagnetController;
+        if (!magnetController) Debug.LogError("MagnetController not found in " + gameObject.name);
+    }
+    
     private void FindOrientationCanon()
     {
         cannonControllers.Clear();
@@ -89,6 +113,7 @@ public class ControlsManager : MonoBehaviour
     {
         FindCameraControl();
         FindBoatController();
+        FindMagnetController();
         FindOrientationCanon();
     }
 
@@ -96,12 +121,23 @@ public class ControlsManager : MonoBehaviour
     {
         playerInputAction.Cannon.Disable();
         playerInputAction.Movement.Enable();
+        playerInputAction.Magnet.Disable();
     }
 
     public void ActivateCannonControls()
     {
+        Debug.Log("activate");
         playerInputAction.Cannon.Enable();
         playerInputAction.Movement.Disable();
+        playerInputAction.Magnet.Disable();
+    }
+    
+    public void ActivateMagnetControls()
+    {
+        Debug.Log("activateionnnnnnnn");
+        playerInputAction.Magnet.Enable();
+        playerInputAction.Movement.Disable();
+        playerInputAction.Cannon.Disable();
     }
     
     private void ActivateCameraControls()

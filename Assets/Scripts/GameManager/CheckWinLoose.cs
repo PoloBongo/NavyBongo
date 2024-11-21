@@ -51,4 +51,9 @@ public class CheckWinLoose : MonoBehaviour
     {
         StartCoroutine(LoadScene("Loose"));
     }
+    
+    public void WinFunction()
+    {
+        StartCoroutine(LoadScene("Win"));
+    }
 }

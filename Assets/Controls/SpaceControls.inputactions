@@ -282,6 +282,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Magnet",
+            "id": "0463a8d6-f051-4a7f-a7fa-b69f363a13b2",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "f5725287-fb2f-4b85-96f7-2e43ec6d89a6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5e911f1f-d601-4182-a355-b5acb419d12f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
