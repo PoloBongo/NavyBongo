@@ -88,7 +88,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0.1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -138,13 +138,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e06585800962f94191760b3762bd14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 5
   explosionSplash: {fileID: 2402004485215833686, guid: ab019caa7d8f73e428e8f8e565187119, type: 3}
   explosionFire: {fileID: 1802078728324033080, guid: c11145ee33b207d429a4f954a140619f, type: 3}
   explosionSound: {fileID: 3431995388314941177}
   explosions:
   - {fileID: 8300000, guid: a6c61dfb901a2d141928c3276565edc4, type: 3}
   - {fileID: 8300000, guid: ef34779748d256448b07dfcc9ea67aad, type: 3}
+  isPlayerFire: 0
 --- !u!82 &3431995388314941177
 AudioSource:
   m_ObjectHideFlags: 0

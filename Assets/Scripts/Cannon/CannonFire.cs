@@ -28,6 +28,7 @@ public class CannonFire : MonoBehaviour
     private bool canFire = false;
     private bool surchauffeCannon = false;
     private bool cancelReloadCannon = false;
+    private bool isReloading = false;
     
     // data
     private GameDataSave gameDataSave;
@@ -52,18 +53,28 @@ public class CannonFire : MonoBehaviour
         if (!rb) GetRigidbody();
         rb.isKinematic = false;
         sliderReload.gameObject.SetActive(true);
+        isReloading = gameDataSave.GetReloadingBool(this.gameObject);
         StopCoroutineResetReloadCoroutine();
         StopCoroutineReloadCoroutine();
         RestoreSliderValue();
         canFire = !(sliderReload.value < 1);
         surchauffeCannon = !(sliderReload.value < 1);
-        if (sliderReload.value < 1)
+        if (sliderReload.value < 1 && !isReloading)
         {
             cancelReloadCannon = true;
             inputAction.Cannon.Reload.performed -= OnReloadPerformed;
             inputAction.Cannon.Reload.canceled -= OnReloadCanceled;
             inputAction.Cannon.Disable();
             unReloadCoroutine = StartCoroutine(ResetSlider());
+        }
+        else if (isReloading)
+        {
+            reloadCoroutine = null;
+            if (reloadCoroutine != null || surchauffeCannon || cancelReloadCannon)
+                return;
+
+            reloadCoroutine = StartCoroutine(ReloadSlider());
+            StopCoroutineResetReloadCoroutine();
         }
         else
         {
@@ -85,6 +96,7 @@ public class CannonFire : MonoBehaviour
         surchauffeCannon = false;
         cancelReloadCannon = false;
         unReloadCoroutine = null;
+        reloadCoroutine = null;
         if (sliderReload) sliderReload.gameObject.SetActive(false);
         if (sliderReload.value < 1)
         {
@@ -92,6 +104,17 @@ public class CannonFire : MonoBehaviour
             inputAction.Cannon.Reload.canceled -= OnReloadCanceled;
             inputAction.Cannon.Disable();
         }
+
+        if (sliderReload.value <= 0.5)
+        {
+            isReloading = true;
+        }
+        else if (sliderReload.value > 0.5)
+        {
+            isReloading = false;
+        }
+        
+        gameDataSave.SetReloadingBool(this.gameObject, isReloading);
     }
     
     private void GetRigidbody()
@@ -138,7 +161,8 @@ public class CannonFire : MonoBehaviour
         
         if (!Mathf.Approximately(sliderReload.value, 0) || reloadCoroutine != null || surchauffeCannon || cancelReloadCannon)
             return;
-        
+
+        isReloading = true;
         reloadCoroutine = StartCoroutine(ReloadSlider());
         StopCoroutineResetReloadCoroutine();
     }
@@ -153,7 +177,6 @@ public class CannonFire : MonoBehaviour
     private void OnReloadCanceled(InputAction.CallbackContext context)
     {
         if (this == null) return;
-        //StopCoroutineReloadCoroutine();
     }
     
     private void StopCoroutineReloadCoroutine()
@@ -165,6 +188,7 @@ public class CannonFire : MonoBehaviour
 
     private IEnumerator ReloadSlider()
     {
+        isReloading = true;
         while (true)
         {
             sliderReload.value += reloadSpeed * Time.deltaTime; 
@@ -177,6 +201,7 @@ public class CannonFire : MonoBehaviour
             }
             yield return null;
         }
+        isReloading = false;
     }
 
     private void FireCannon()

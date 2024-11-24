@@ -11,7 +11,7 @@ public class MagnetController : MonoBehaviour
 
     private GameObject targetedObject;
     private Rigidbody targetedRigidbody;
-    private Vector3 lastMousePosition;
+    private Vector2 lastMousePosition;
     private float targetHeight;
 
     private bool isRightClicking = false;
@@ -32,19 +32,21 @@ public class MagnetController : MonoBehaviour
 
     private void Update()
     {
-        if (!isRightClicking && isHolding)
-        {
-            ThrowObject();
-        }
-    }
-
-    private void FixedUpdate()
-    {
         if (isRightClicking && !isHolding)
         {
             TryPickupObject();
         }
-        
+
+        if (!isRightClicking && isHolding)
+        {
+            ThrowObject();
+        }
+
+        lastMousePosition = Mouse.current.position.ReadValue();
+    }
+
+    private void FixedUpdate()
+    {
         if (isHolding && targetedRigidbody)
         {
             Vector3 targetPosition = targetedRigidbody.position;
@@ -86,23 +88,21 @@ public class MagnetController : MonoBehaviour
         if (targetedRigidbody)
         {
             Vector2 currentMousePosition = Mouse.current.position.ReadValue();
-            Vector2 mouseDelta = currentMousePosition - (Vector2)lastMousePosition;
+            Vector2 mouseDelta = currentMousePosition - lastMousePosition;
 
-            float maxMouseDelta = 50f;
+            float maxMouseDelta = 10f;
             if (mouseDelta.magnitude > maxMouseDelta)
             {
                 mouseDelta = mouseDelta.normalized * maxMouseDelta;
             }
 
-            Vector3 screenDirection = new Vector3(mouseDelta.x, mouseDelta.y, 0).normalized;
-            Vector3 worldDirection = mainCamera.transform.TransformDirection(screenDirection);
-            worldDirection.Normalize();
+            Vector3 throwDirection = mainCamera.transform.right * mouseDelta.x;
 
             float adjustedForceMultiplier = forceMultiplier * 0.3f;
             float force = Mathf.Clamp(mouseDelta.magnitude * adjustedForceMultiplier, 0, 20f);
 
             targetedRigidbody.useGravity = true;
-            targetedRigidbody.AddForce(worldDirection * force, ForceMode.Impulse);
+            targetedRigidbody.AddForce(throwDirection * force, ForceMode.Impulse);
 
             targetedObject = null;
             targetedRigidbody = null;

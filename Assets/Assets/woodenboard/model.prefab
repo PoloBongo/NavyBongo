@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -67
+      value: -29.42
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 55.3
+      value: 7.92
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -35.3
+      value: -7.33
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
       propertyPath: m_LocalRotation.w
@@ -92,6 +92,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2709347036122733920}
   m_SourcePrefab: {fileID: 100100000, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
+--- !u!23 &7650857214400464653 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
+  m_PrefabInstance: {fileID: 9073868934330030985}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8155370666648708824 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bce1361ceb95ee843be134f7b2aa3d81, type: 3}
@@ -127,7 +132,7 @@ Rigidbody:
   m_GameObject: {fileID: 8155370666648708824}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.2
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -173,6 +178,10 @@ MonoBehaviour:
   fitToWaterSurface: {fileID: 3235863676671213351}
   waterSurface: {fileID: 0}
   rigidbody: {fileID: 6777944944378744774}
+  meshRenderer: {fileID: 7650857214400464653}
+  materials:
+  - {fileID: 2100000, guid: 6f7e9712f57d3ab4fb7d94845fda4486, type: 2}
+  - {fileID: 2100000, guid: 9a6ef89b2987b6a47908f22327ca635c, type: 2}
 --- !u!114 &2709347036122733920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,6 +194,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fe248ddb00ddd749bed6e3bd20c5c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthSlider: {fileID: 0}
   addHealth: 10
-  popupHealth: {fileID: 0}
