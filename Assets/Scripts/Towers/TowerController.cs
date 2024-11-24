@@ -8,6 +8,7 @@ public class TowerController : MonoBehaviour
     [SerializeField] private Slider uiDestruction;
     [SerializeField] private float maxHealth;
     [SerializeField] private float actualHealth;
+    [SerializeField] private GameObject woodSpawn;
 
     private TMP_Text destructionText;
     private GetAllTowersCount getAllTowersCount;
@@ -84,6 +85,12 @@ public class TowerController : MonoBehaviour
     
     private void OnDestroy()
     {
+        if (gameObject.scene.isLoaded)
+        {
+            Vector3 newPos = new Vector3(transform.position.x, transform.position.y + 6f, transform.position.z);
+            Instantiate(woodSpawn, newPos, Quaternion.identity);
+        }
+
         gameDataSave.AddBerrys(100);
         OnDestroyed?.Invoke(gameObject);
     }

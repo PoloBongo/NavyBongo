@@ -18,14 +18,20 @@ public class UpdateBerrys : MonoBehaviour
     private void OnEnable()
     {
         TowerController.OnDestroyed += HandleObjectDestruction;
+        RedirectionGame.OnUpdateNewBoat += HandleObjectDestruction2;
     }
 
     private void OnDisable()
     {
-        TowerController.OnDestroyed -= HandleObjectDestruction;
+        RedirectionGame.OnUpdateNewBoat -= HandleObjectDestruction2;
     }
 
     private void HandleObjectDestruction(GameObject destroyedObject)
+    {
+        UpdateBerrysText();
+    }
+    
+    private void HandleObjectDestruction2(string _boatName)
     {
         UpdateBerrysText();
     }

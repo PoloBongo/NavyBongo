@@ -7,36 +7,41 @@ using UnityEngine.UI;
 public class AddHealthToBoat : MonoBehaviour
 {
     [Header("Object Throwable Settings")]
-    [SerializeField] private Slider healthSlider;
     [SerializeField] private int addHealth;
-    [SerializeField] private GameObject popupHealth;
+    private Slider healthSlider;
     private Coroutine coroutinePopupHealth;
+    
+    public delegate void OnHitWood(bool _isFull);
+    public static event OnHitWood OnHitWoodEvent;
 
     private void OnCollisionEnter(Collision other)
     {
+        if (!healthSlider) FoundPlayerUIHealth();
+        
         if (other.gameObject.CompareTag("Player"))
         {
-            float newHealth = healthSlider.value;
-            float targetHealth = newHealth += addHealth;
-            if (targetHealth > 100)
+            float currentHealth = healthSlider.value;
+            float newHealth = Mathf.Clamp(currentHealth + addHealth, 0, 100);
+
+            healthSlider.value = newHealth;
+
+            if (newHealth == 100 && currentHealth == 100)
             {
-                healthSlider.value = 100;
+                OnHitWoodEvent?.Invoke(true);
             }
             else
             {
-                if (coroutinePopupHealth == null ) coroutinePopupHealth = StartCoroutine(ShowPopupAddHealth());
-                healthSlider.value = targetHealth;
+                OnHitWoodEvent?.Invoke(false);
             }
-            
-            Destroy(gameObject);
+
+            Destroy(gameObject, 1);
         }
+
     }
-    
-    private IEnumerator ShowPopupAddHealth()
+
+    private void FoundPlayerUIHealth()
     {
-        popupHealth.SetActive(true);
-        yield return new WaitForSeconds(2f);
-        popupHealth.SetActive(false);
-        coroutinePopupHealth = null;
+        GameObject playerUI = GameObject.FindGameObjectWithTag("UIPlayerHealth");
+        healthSlider = playerUI.GetComponent<Slider>();
     }
 }

@@ -17,6 +17,9 @@ public class CameraControl : MonoBehaviour
     private int maximumPriority;
     private int minimumPriority;
     private int totalNumbersOfCameras;
+    
+    public delegate void OnActiveMagnet();
+    public static event OnActiveMagnet OnActiveMagnetPopup;
 
     private void Start()
     {
@@ -123,6 +126,7 @@ public class CameraControl : MonoBehaviour
                 break;
             case "MagnetCam":
                 controlsManager.ActivateMagnetControls();
+                OnActiveMagnetPopup?.Invoke();
                 break;
             default:
                 controlsManager.ActivateBoatControls();

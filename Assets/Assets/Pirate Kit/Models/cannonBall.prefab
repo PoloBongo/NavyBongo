@@ -145,6 +145,7 @@ MonoBehaviour:
   explosions:
   - {fileID: 8300000, guid: a6c61dfb901a2d141928c3276565edc4, type: 3}
   - {fileID: 8300000, guid: ef34779748d256448b07dfcc9ea67aad, type: 3}
+  isPlayerFire: 1
 --- !u!82 &3431995388314941177
 AudioSource:
   m_ObjectHideFlags: 0

@@ -1,9 +1,11 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PopupDamage : MonoBehaviour
 {
     private Coroutine showPopupDamage;
+    [SerializeField] private TMP_Text damageText;
     private void OnEnable()
     {
         ReceiveDamage.OnDestroyed += HandleObjectDestruction;
@@ -16,7 +18,15 @@ public class PopupDamage : MonoBehaviour
 
     private void HandleObjectDestruction(GameObject destroyedObject, bool hasHit)
     {
-        if (hasHit) showPopupDamage ??= StartCoroutine(ShowPopupDamage());
+        if (hasHit)
+        {
+            damageText.text = "Touché";
+        }
+        else
+        {
+            damageText.text = "Loupé";
+        }
+        showPopupDamage ??= StartCoroutine(ShowPopupDamage());
     }
     
     private IEnumerator ShowPopupDamage()

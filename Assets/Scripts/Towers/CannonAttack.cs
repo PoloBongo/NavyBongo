@@ -61,13 +61,16 @@ public class CannonAttack : MonoBehaviour
         
         bool isAligned = RotateCannonTowardsPlayer();
 
-        if (isAligned)
+        if (isVisible)
         {
-            timeSinceLastAttack += Time.deltaTime;
-            if (timeSinceLastAttack >= cooldownAck)
+            if (isAligned)
             {
-                Shoot();
-                timeSinceLastAttack = 0f;
+                timeSinceLastAttack += Time.deltaTime;
+                if (timeSinceLastAttack >= cooldownAck)
+                {
+                    Shoot();
+                    timeSinceLastAttack = 0f;
+                }
             }
         }
     }

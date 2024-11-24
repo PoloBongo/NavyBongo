@@ -317,6 +317,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""662d39bb-a686-416d-8527-af08d12c66ee"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -328,6 +337,17 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e95d360e-1994-4e86-a535-f752ce838b22"",
+                    ""path"": ""<Pointer>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -354,6 +374,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         // Magnet
         m_Magnet = asset.FindActionMap("Magnet", throwIfNotFound: true);
         m_Magnet_Click = m_Magnet.FindAction("Click", throwIfNotFound: true);
+        m_Magnet_MouseMove = m_Magnet.FindAction("MouseMove", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -624,11 +645,13 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Magnet;
     private List<IMagnetActions> m_MagnetActionsCallbackInterfaces = new List<IMagnetActions>();
     private readonly InputAction m_Magnet_Click;
+    private readonly InputAction m_Magnet_MouseMove;
     public struct MagnetActions
     {
         private @PlayerInputAction m_Wrapper;
         public MagnetActions(@PlayerInputAction wrapper) { m_Wrapper = wrapper; }
         public InputAction @Click => m_Wrapper.m_Magnet_Click;
+        public InputAction @MouseMove => m_Wrapper.m_Magnet_MouseMove;
         public InputActionMap Get() { return m_Wrapper.m_Magnet; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -641,6 +664,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Click.started += instance.OnClick;
             @Click.performed += instance.OnClick;
             @Click.canceled += instance.OnClick;
+            @MouseMove.started += instance.OnMouseMove;
+            @MouseMove.performed += instance.OnMouseMove;
+            @MouseMove.canceled += instance.OnMouseMove;
         }
 
         private void UnregisterCallbacks(IMagnetActions instance)
@@ -648,6 +674,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Click.started -= instance.OnClick;
             @Click.performed -= instance.OnClick;
             @Click.canceled -= instance.OnClick;
+            @MouseMove.started -= instance.OnMouseMove;
+            @MouseMove.performed -= instance.OnMouseMove;
+            @MouseMove.canceled -= instance.OnMouseMove;
         }
 
         public void RemoveCallbacks(IMagnetActions instance)
@@ -687,5 +716,6 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     public interface IMagnetActions
     {
         void OnClick(InputAction.CallbackContext context);
+        void OnMouseMove(InputAction.CallbackContext context);
     }
 }

@@ -8,7 +8,8 @@ public class ReceiveDamage : MonoBehaviour
     [SerializeField] private GameObject explosionSplash;
     [SerializeField] private GameObject explosionFire;
     [SerializeField] private AudioSource explosionSound;
-    [SerializeField] AudioClip[] explosions; 
+    [SerializeField] AudioClip[] explosions;
+    [SerializeField] private bool isPlayerFire;
     private GameObject popupDamage;
     private bool stopUpdate = false;
     private bool hasHit;
@@ -30,6 +31,7 @@ public class ReceiveDamage : MonoBehaviour
         popupDamage = FindInactiveObjectByTag("PopupDamage");
         antiDupliData = true;
         FindGameDataSave();
+        GetBoatActual();
     }
 
     GameObject FindInactiveObjectByTag(string _tag)
@@ -53,14 +55,21 @@ public class ReceiveDamage : MonoBehaviour
 
         if (!collision.gameObject.CompareTag("Enemy"))
         {
-            gameDataSave.AddTotalAim(-10);
             antiDupliData = true;
+            if (isPlayerFire)
+            {
+                if (popupDamage) popupDamage.SetActive(true);
+                hasHit = false;
+            }
         }
         else
         {
-            if (popupDamage) popupDamage.SetActive(true);
-            hasHit = true;
-            gameDataSave.AddTotalAim(10);
+            if (isPlayerFire)
+            {
+                if (popupDamage) popupDamage.SetActive(true);
+                hasHit = true;
+                gameDataSave.AddTotalAim();
+            }
         }
         
         if (collision.gameObject.CompareTag("Player"))
@@ -75,7 +84,6 @@ public class ReceiveDamage : MonoBehaviour
         if (!(transform.position.y < 0)) return;
         Instantiate(explosionSplash, transform.position, transform.rotation);
         CreateSound(0);
-        if (!antiDupliData) gameDataSave.AddTotalAim(-10);
         Destroy(gameObject, 1f);
         stopUpdate = true;
     }
@@ -106,5 +114,28 @@ public class ReceiveDamage : MonoBehaviour
             gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
         else
             Debug.LogError("GameDataSave not found!");
+    }
+
+    private void GetBoatActual()
+    {
+        if (isPlayerFire)
+        {
+            switch (gameDataSave.GetStockPlayerName())
+            {
+                case "BoatA":
+                    damage = 25;
+                    break;
+                case "BoatB":
+                    damage = 35;
+                    break;
+                case "BoatC":
+                    damage = 45;
+                    break;
+            }
+        }
+        else
+        {
+            damage = 5;
+        }
     }
 }

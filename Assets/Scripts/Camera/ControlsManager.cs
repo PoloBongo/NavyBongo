@@ -126,7 +126,6 @@ public class ControlsManager : MonoBehaviour
 
     public void ActivateCannonControls()
     {
-        Debug.Log("activate");
         playerInputAction.Cannon.Enable();
         playerInputAction.Movement.Disable();
         playerInputAction.Magnet.Disable();
@@ -134,7 +133,6 @@ public class ControlsManager : MonoBehaviour
     
     public void ActivateMagnetControls()
     {
-        Debug.Log("activateionnnnnnnn");
         playerInputAction.Magnet.Enable();
         playerInputAction.Movement.Disable();
         playerInputAction.Cannon.Disable();

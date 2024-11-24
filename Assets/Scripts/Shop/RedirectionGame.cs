@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class RedirectionGame : MonoBehaviour
 {
+    [SerializeField] private AudioSource audioSourceS;
+    [SerializeField] private AudioSource audioSourceF;
     private GameDataSave gameDataSave;
     [SerializeField] private GameObject popupShopSuccess;
     [SerializeField] private GameObject popupShopFailed;
@@ -20,24 +22,31 @@ public class RedirectionGame : MonoBehaviour
 
     public void BuyNewBoat(string _boatName)
     {
-        gameDataSave.AddBerrys(500);
         int berrysPlayer = gameDataSave.GetBerrys();
         int priceBoat = GetPriceOfBoat(_boatName);
         if (berrysPlayer >= priceBoat)
         {
+            audioSourceS.Play();
             if (coroutinePopupShopS == null) coroutinePopupShopS = StartCoroutine(ShowPopupShopSuccess());
             gameDataSave.RemoveBerrys(priceBoat);
+            gameDataSave.SetStockPlayerName(_boatName);
             OnUpdateNewBoat?.Invoke(_boatName);
             SceneManager.UnloadSceneAsync("ShopInGame");
             Time.timeScale = 1f;
             SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
-            if (GameDataSave.Instance != null && GameDataSave.Instance.GetStockPlayer() != null)
+            if (gameDataSave.GetStockPlayer())
             {
-                Destroy(GameDataSave.Instance.GetStockPlayer());
+                Debug.Log("destro boat " + gameDataSave.GetStockPlayer().name);
+                Destroy(gameDataSave.GetStockPlayer());
+            }
+            else
+            {
+                Debug.Log("dont destro boat ");
             }
         }
         else
         {
+            audioSourceF.Play();
             if (coroutinePopupShopF == null) coroutinePopupShopF = StartCoroutine(ShowPopupShopFailed());
         }
     }
@@ -47,11 +56,11 @@ public class RedirectionGame : MonoBehaviour
         switch (_boatName)
         {
             case "BoatA":
-                return 100;
+                return 0;
             case "BoatB":
-                return 400;
+                return 200;
             case "BoatC":
-                return 1000;
+                return 400;
         }
 
         return -1;
@@ -80,5 +89,14 @@ public class RedirectionGame : MonoBehaviour
             gameDataSave = gameDataSaveGameObject.GetComponent<GameDataSave>();
         else
             Debug.LogError("GameDataSave not found!");
+    }
+
+    public void BackToGame()
+    {
+        audioSourceS.Play();
+        SceneManager.UnloadSceneAsync("ShopInGame");
+        Time.timeScale = 1f;
+        gameDataSave.GetPlayerInputAction().Enable();
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
     }
 }

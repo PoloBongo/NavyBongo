@@ -23,7 +23,7 @@ public class InstantiateBoat : MonoBehaviour
     {
         FindGameDataSave();
         if (!gameDataSave) Debug.LogError("GameSave not found in : " + gameObject.name);
-        actualBoatName = "BoatA";
+        actualBoatName = gameDataSave.GetStockPlayerName();
         GetActualBoat();
     }
     
@@ -57,12 +57,6 @@ public class InstantiateBoat : MonoBehaviour
         {
             Debug.LogError("Failed to instantiate new boat!");
             return;
-        }
-
-        // Assurez-vous que le bateau et ses composants sont prêts
-        if (newBoat.GetComponent<BoatController>() == null)
-        {
-            Debug.LogError("New boat does not have a BoatController component!");
         }
 
         OnInit?.Invoke();

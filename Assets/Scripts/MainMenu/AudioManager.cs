@@ -6,8 +6,8 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    public Slider volumeSlider;
-    private float currentVolume = 1f;
+    [SerializeField] private Slider volumeSlider;
+    private float currentVolume;
 
     private void Awake()
     {
@@ -20,6 +20,7 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        currentVolume = volumeSlider.value;
     }
 
     private void Start()
@@ -33,14 +34,24 @@ public class AudioManager : MonoBehaviour
         ApplyVolume();
     }
 
-    private void ApplyVolume()
+    public void ApplyVolume()
     {
         AudioListener.volume = currentVolume;
     }
-}
+    
+    public void ApplyVolumeNew(float _value)
+    {
+        currentVolume = _value;
+        ApplyVolume();
+    }
 
-[System.Serializable]
-public class VolumeSettings
-{
-    public float volume;
+    public void SetNewSlider(Slider slider)
+    {
+        volumeSlider = slider;
+    }
+
+    public float GetVolume()
+    {
+        return currentVolume;
+    }
 }
